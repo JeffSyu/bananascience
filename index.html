@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bana-Sci 科學互動模擬實驗室</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --tag-phys: rgba(56, 189, 248, 0.15);
+      --tag-phys-text: #38bdf8;
+      --tag-chem: rgba(168, 85, 247, 0.15);
+      --tag-chem-text: #c084fc;
+      --tag-opt: rgba(250, 204, 21, 0.15);
+      --tag-opt-text: #facc15;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 頂部標題區 */
+    header {
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 2rem;
+      text-align: center;
+    }
+
+    .brand-badge {
+      display: inline-block;
+      padding: 0.25rem 0.85rem;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+
+    .subtitle {
+      color: var(--text-sub);
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
+
+    /* 分類篩選按鈕 */
+    .filter-bar {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-sub);
+      padding: 0.45rem 1.1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--accent);
+      color: #0f172a;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* 模擬卡片網格 */
+    main {
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1rem 1.5rem 4rem;
+      flex: 1;
+    }
+
+    .sim-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .sim-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .sim-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 0.75rem;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.65rem;
+      border-radius: 0.375rem;
+    }
+
+    .tag.physics { background: var(--tag-phys); color: var(--tag-phys-text); }
+    .tag.chemistry { background: var(--tag-chem); color: var(--tag-chem-text); }
+    .tag.optics { background: var(--tag-opt); color: var(--tag-opt-text); }
+
+    .sim-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .sim-desc {
+      color: var(--text-sub);
+      font-size: 0.92rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--accent);
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .sim-card:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    .arrow {
+      transition: transform 0.2s ease;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--text-sub);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span class="brand-badge">Interactive Science Lab</span>
+    <h1>bana-Sci 科學互動模擬實驗室</h1>
+    <p class="subtitle">透過視覺化與參數即時調控，探索物理與化學的微觀與宏觀世界</p>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterSims('all', this)">全部模擬</button>
+      <button class="filter-btn" onclick="filterSims('physics', this)">力學與波動</button>
+      <button class="filter-btn" onclick="filterSims('electricity', this)">電磁與電路</button>
+      <button class="filter-btn" onclick="filterSims('optics', this)">光學與視覺</button>
+      <button class="filter-btn" onclick="filterSims('chemistry', this)">原子與化學</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="sim-grid" id="simGrid">
+
+      <!-- 1. 波動物理模擬 (對應 simulations/wave_physic) -->
+      <a href="./sims/wave_physic/" class="sim-card" data-category="physics">
+        <div>
+          <div class="card-top">
+            <div class="icon-box">🌊</div>
+            <span class="tag physics">力學與波動</span>
+          </div>
+          <h2 class="sim-title">波動物理模擬器</h2>
+          <p class="sim-desc">調整頻率、振幅與波速，觀察橫波、縱波傳播特性與介質振動的即時關係。</p>
+        </div>
+        <div class="card-footer">
+          <span>啟動模擬實驗</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <!-- 2. 運動學模擬 (對應 simulations/kinematics_simulator) -->
+      <a href="./sims/kinematics_simulator/" class="sim-card" data-category="physics">
+        <div>
+          <div class="card-top">
+            <div class="icon-box">🚀</div>
+            <span class="tag physics">力學與波動</span>
+          </div>
+          <h2 class="sim-title">運動學與拋體模擬</h2>
+          <p class="sim-desc">探索位置、速度與加速度的關係，並透過實驗數據圖表分析等加速與拋體運動。</p>
+        </div>
+        <div class="card-footer">
+          <span>啟動模擬實驗</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <!-- 3. 電路實驗室 (對應 simulations/circuit_lab) -->
+      <a href="./sims/circuit_lab/" class="sim-card" data-category="electricity">
+        <div>
+          <div class="card-top">
+            <div class="icon-box">⚡</div>
+            <span class="tag physics">電磁與電路</span>
+          </div>
+          <h2 class="sim-title">虛擬電路實驗室</h2>
+          <p class="sim-desc">自由串聯與並聯電池、電阻與燈泡，即時量測電壓與電流變化，驗證歐姆定律。</p>
+        </div>
+        <div class="card-footer">
+          <span>啟動模擬實驗</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <!-- 4. 視覺與光學 (對應 simulations/eyesoptical) -->
+      <a href="./sims/eyesoptical/" class="sim-card" data-category="optics">
+        <div>
+          <div class="card-top">
+            <div class="icon-box">👁️</div>
+            <span class="tag optics">光學與視覺</span>
+          </div>
+          <h2 class="sim-title">眼球成像與光學矯正</h2>
+          <p class="sim-desc">模擬水晶體焦距調節、近視與遠視成因，並觀察凹凸透鏡如何修正光線聚焦於視網膜。</p>
+        </div>
+        <div class="card-footer">
+          <span>啟動模擬實驗</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <!-- 5. 原子結構 (對應 simulations/atom) -->
+      <a href="./sims/atom/" class="sim-card" data-category="chemistry">
+        <div>
+          <div class="card-top">
+            <div class="icon-box">⚛️</div>
+            <span class="tag chemistry">原子與化學</span>
+          </div>
+          <h2 class="sim-title">原子模型與粒子探索</h2>
+          <p class="sim-desc">自由增減質子、中子與電子，觀察原子序、質量數、電荷狀態與元素穩定度的變化。</p>
+        </div>
+        <div class="card-footer">
+          <span>啟動模擬實驗</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+
+      <!-- 
+      ========================================================
+      【未來新增模擬時，只需複製上方一個 <a>...</a> 區塊貼在此處】
+      並將 href="./sims/資料夾名稱/" 改為對應的名稱即可！
+      ========================================================
+      -->
+
+    </div>
+  </main>
+
+  <footer>
+    <p>© bana-Sci 科學互動模擬教學平台 · Powered by AI Studio & GitHub Actions</p>
+  </footer>
+
+  <script>
+    function filterSims(category, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.querySelectorAll('.sim-card').forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
