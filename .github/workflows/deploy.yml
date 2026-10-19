@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: true # 若連續推送，直接取消舊的編譯以節省資源
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -24,31 +24,34 @@ jobs:
       - name: 1. 檢出程式碼
         uses: actions/checkout@v4
 
-      - name: 2. 啟用極速套件引擎 Bun (對應 AI Studio 的 bun.lock)
+      - name: 2. 啟用極速套件引擎 Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
       - name: 3. 建立發布目錄並打包所有模擬專案
         run: |
-          # 建立最終網站資料夾 dist，並放入主畫面 index.html
           mkdir -p dist
           cp index.html dist/
-          
-          # 若有額外放 favicon 資料夾則一併複製（沒有也不會報錯）
           [ -d "favicon" ] && cp -r favicon dist/ || true
 
-          # 自動掃描 simulations/ 下的所有原生專案並直接輸出至 dist/sims/
           if [ -d "simulations" ]; then
             for dir in simulations/*/ ; do
               [ -e "$dir" ] || continue
               sim_name=$(basename "$dir")
-              echo "🚀 正在打包模擬專案: $sim_name"
+              echo "正在打包模擬專案: $sim_name"
               
+              # 1. 編譯 AI Studio 專案至 dist/sims/[project_name]
               pushd "$dir"
               bun install
               bunx vite build --base=./ --outDir "../../dist/sims/$sim_name"
               popd
+
+              # 2. 若該專案內有 thumbnail.png，複製到對應路徑供首頁讀取
+              if [ -f "${dir}thumbnail.png" ]; then
+                mkdir -p "dist/simulations/$sim_name"
+                cp "${dir}thumbnail.png" "dist/simulations/$sim_name/thumbnail.png"
+              fi
             done
           fi
 
