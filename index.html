@@ -505,7 +505,7 @@
     <header class="site-header" id="siteHeader">
       <div class="header-inner">
         <h1>香蕉老師的科學互動實驗室</h1>
-        <p class="subtitle">香蕉老師的教學模擬分享，透過即時互動與視覺化，讓物理化學更具象</p>
+        <p class="subtitle">香蕉老師的教學百寶箱，透過即時互動與視覺化，讓物理化學更好懂!!</p>
       </div>
     </header>
   </div>
@@ -528,7 +528,7 @@
       <!-- 篩選群組 1：學科領域 -->
       <div class="filter-group">
         <button type="button" class="group-toggle" aria-expanded="true" onclick="toggleGroup(this)">
-          <span>學科領域</span>
+          <span>領域</span>
           <span class="chevron">▼</span>
         </button>
         <div class="group-collapse">
@@ -546,6 +546,13 @@
                 <span>化學</span>
               </span>
               <span class="item-count" data-count-for="chemistry">(0)</span>
+            </label>
+            <label class="checkbox-label">
+              <span class="checkbox-left">
+                <input type="checkbox" name="domain" value="others" data-label="其他" />
+                <span>其他</span>
+              </span>
+              <span class="item-count" data-count-for="others">(0)</span>
             </label>
           </div>
         </div>
@@ -764,7 +771,7 @@
 
       <!-- 無符合篩選結果時的提示畫面 -->
       <div class="empty-state hidden" id="emptyState">
-        <p>找不到同時符合目前篩選條件的模擬教材。</p>
+        <p>找不到符合目前篩選條件</p>
         <button type="button" class="reset-btn" onclick="clearAllFilters()">清除所有篩選條件</button>
       </div>
     </main>
