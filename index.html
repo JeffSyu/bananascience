@@ -4,499 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>香蕉老師的科學互動實驗室</title>
-  <style>
-    :root {
-      --primary: #0284c7;
-      --primary-dark: #0369a1;
-      --header-bg: #0f172a;
-      --bg-page: #f1f5f9;
-      --bg-surface: #ffffff;
-      --border-color: #cbd5e1;
-      --border-light: #e2e8f0;
-      --text-main: #1e293b;
-      --text-secondary: #475569;
-      --text-muted: #64748b;
-      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
-      --shadow-hover: 0 10px 20px -5px rgba(15, 23, 42, 0.14);
-      --header-expanded-h: 136px;
-      --header-compact-h: 58px;
-    }
-
-    /* 4. 預留捲軸空間，避免有無 Scrollbar 時畫面出現左右些微位移 */
-    html {
-      scrollbar-gutter: stable;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
-      background-color: var(--bg-page);
-      color: var(--text-main);
-      line-height: 1.5;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* 1 & 2. 頂部標頭區：固定於頂部 + 向下滾動時向上縮小、靠左並隱藏小標題動畫 */
-    .header-spacer {
-      height: var(--header-expanded-h);
-      flex-shrink: 0;
-    }
-
-    .site-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      height: var(--header-expanded-h);
-      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-      color: #ffffff;
-      padding: 0 1.5rem;
-      border-bottom: 4px solid var(--primary);
-      display: flex;
-      align-items: center;
-      transition: height 0.32s cubic-bezier(0.4, 0, 0.2, 1),
-                  box-shadow 0.32s cubic-bezier(0.4, 0, 0.2, 1),
-                  border-bottom-width 0.32s ease;
-    }
-
-    .header-inner {
-      max-width: 1280px;
-      width: 100%;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: center;
-    }
-
-    .site-header h1 {
-      font-size: clamp(1.6rem, 3vw, 2.25rem);
-      font-weight: 800;
-      letter-spacing: 0.01em;
-      margin-bottom: 0.35rem;
-      text-align: left;
-      transform-origin: left center;
-      transition: font-size 0.32s cubic-bezier(0.4, 0, 0.2, 1),
-                  margin-bottom 0.32s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .site-header .subtitle {
-      color: #cbd5e1;
-      font-size: 1rem;
-      font-weight: 400;
-      max-height: 3rem;
-      opacity: 1;
-      overflow: hidden;
-      transition: max-height 0.32s cubic-bezier(0.4, 0, 0.2, 1),
-                  opacity 0.22s ease;
-    }
-
-    /* 標頭滾動縮小狀態 (.site-header.scrolled) */
-    .site-header.scrolled {
-      height: var(--header-compact-h);
-      border-bottom-width: 2px;
-      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.28);
-    }
-
-    .site-header.scrolled h1 {
-      font-size: 1.22rem;
-      margin-bottom: 0;
-    }
-
-    .site-header.scrolled .subtitle {
-      max-height: 0;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    /* 2. 主版面：左側篩選欄 + 右側模擬教材區 (參考 PhET 版面配置) */
-    .layout-container {
-      max-width: 1280px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 1.75rem 1.5rem 3rem;
-      display: grid;
-      grid-template-columns: 270px 1fr;
-      gap: 2rem;
-      flex: 1;
-      align-items: start;
-    }
-
-    /* 3. 左側篩選側邊欄（配合固定標頭高度動態定位） */
-    .filter-sidebar {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-light);
-      border-radius: 0.5rem;
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-      position: sticky;
-      top: calc(var(--header-compact-h) + 1.25rem);
-    }
-
-    .sidebar-search {
-      padding: 1rem;
-      border-bottom: 1px solid var(--border-light);
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 0.55rem 0.75rem;
-      border: 1px solid var(--border-color);
-      border-radius: 0.375rem;
-      font-size: 0.9rem;
-      color: var(--text-main);
-      background-color: #f8fafc;
-      transition: border-color 0.15s, background-color 0.15s;
-    }
-
-    .search-input:focus {
-      outline: none;
-      border-color: var(--primary);
-      background-color: #ffffff;
-    }
-
-    /* 可收合篩選群組 + 摺疊過程平滑動畫 */
-    .filter-group {
-      border-bottom: 1px solid var(--border-light);
-    }
-
-    .filter-group:last-child {
-      border-bottom: none;
-    }
-
-    .group-toggle {
-      width: 100%;
-      background: none;
-      border: none;
-      padding: 0.9rem 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--text-main);
-      cursor: pointer;
-      text-align: left;
-      transition: background-color 0.15s;
-    }
-
-    .group-toggle:hover {
-      background-color: #f8fafc;
-    }
-
-    .group-toggle .chevron {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .filter-group.collapsed .chevron {
-      transform: rotate(-90deg);
-    }
-
-    /* 使用 CSS Grid 1fr <-> 0fr 實作無斷點摺疊過程動畫 */
-    .group-collapse {
-      display: grid;
-      grid-template-rows: 1fr;
-      opacity: 1;
-      transition: grid-template-rows 0.28s cubic-bezier(0.4, 0, 0.2, 1),
-                  opacity 0.22s ease;
-    }
-
-    .filter-group.collapsed .group-collapse {
-      grid-template-rows: 0fr;
-      opacity: 0;
-    }
-
-    .group-options {
-      overflow: hidden;
-      padding: 0.25rem 1rem 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      transition: padding 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .filter-group.collapsed .group-options {
-      padding-top: 0;
-      padding-bottom: 0;
-    }
-
-    /* 核取方塊項目 */
-    .checkbox-label {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      padding: 0.2rem 0;
-      user-select: none;
-    }
-
-    .checkbox-label:hover {
-      color: var(--primary);
-    }
-
-    .checkbox-left {
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
-    }
-
-    .checkbox-label input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: var(--primary);
-      cursor: pointer;
-    }
-
-    .item-count {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    /* 4. 右側內容區：工具列與模擬卡片網格（已對調篩選標籤與統計文字位置） */
-    .catalog-main {
-      min-width: 0;
-    }
-
-    .catalog-toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
-      min-height: 2.25rem;
-    }
-
-    /* 已選篩選條件列（位於左側，皆為可點擊移除的真實按鈕） */
-    .active-filters {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    /* 數量統計文字（位於右側，即使左側無標籤也保持靠右對齊） */
-    .result-stats {
-      margin-left: auto;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-    }
-
-    .filter-chip-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      background-color: #e0f2fe;
-      color: #0369a1;
-      border: 1px solid #bae6fd;
-      border-radius: 999px;
-      padding: 0.25rem 0.7rem;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.15s;
-    }
-
-    .filter-chip-btn:hover {
-      background-color: #bae6fd;
-    }
-
-    .clear-all-btn {
-      background: none;
-      border: none;
-      color: var(--primary);
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-decoration: underline;
-      cursor: pointer;
-      padding: 0.2rem 0.4rem;
-    }
-
-    .clear-all-btn:hover {
-      color: var(--primary-dark);
-    }
-
-    /* 5. 模擬卡片網格 (PhET 縮圖卡片設計) */
-    .sim-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .sim-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-light);
-      border-radius: 0.5rem;
-      overflow: hidden;
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      flex-direction: column;
-      box-shadow: var(--shadow-sm);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    }
-
-    .sim-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-hover);
-      border-color: var(--primary);
-    }
-
-    /* 16:9 模擬畫面縮圖區 */
-    .thumb-wrapper {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background-color: #1e293b;
-      overflow: hidden;
-      border-bottom: 1px solid var(--border-light);
-    }
-
-    .thumb-wrapper img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.3s ease;
-    }
-
-    .sim-card:hover .thumb-wrapper img {
-      transform: scale(1.04);
-    }
-
-    /* 滑鼠移入時的啟動遮罩 (PhET Play 視覺回饋) */
-    .play-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.35);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-
-    .sim-card:hover .play-overlay {
-      opacity: 1;
-    }
-
-    .play-circle {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: rgba(2, 132, 199, 0.92);
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .play-circle svg {
-      width: 22px;
-      height: 22px;
-      margin-left: 2px;
-      fill: currentColor;
-    }
-
-    /* 卡片文字資訊區（純文字排版，不放任何偽按鈕框） */
-    .card-body {
-      padding: 1rem 1.15rem 1.15rem;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-
-    .sim-meta {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--primary);
-      margin-bottom: 0.3rem;
-      letter-spacing: 0.02em;
-    }
-
-    .sim-title {
-      font-size: 1.12rem;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 0.45rem;
-      line-height: 1.35;
-    }
-
-    .sim-desc {
-      font-size: 0.88rem;
-      color: var(--text-secondary);
-      line-height: 1.55;
-      flex: 1;
-    }
-
-    /* 查無結果提示區 */
-    .empty-state {
-      background: var(--bg-surface);
-      border: 1px dashed var(--border-color);
-      border-radius: 0.5rem;
-      padding: 3rem 1.5rem;
-      text-align: center;
-      color: var(--text-secondary);
-    }
-
-    .empty-state p {
-      margin-bottom: 1rem;
-      font-size: 1rem;
-    }
-
-    .reset-btn {
-      background-color: var(--primary);
-      color: #ffffff;
-      border: none;
-      border-radius: 0.375rem;
-      padding: 0.55rem 1.2rem;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .reset-btn:hover {
-      background-color: var(--primary-dark);
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    footer {
-      text-align: center;
-      padding: 1.5rem;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      border-top: 1px solid var(--border-light);
-      background: var(--bg-surface);
-    }
-
-    /* 響應式：平板與手機版自動調整 */
-    @media (max-width: 860px) {
-      .layout-container {
-        grid-template-columns: 1fr;
-        gap: 1.25rem;
-      }
-      .filter-sidebar {
-        position: static;
-      }
-    }
-  </style>
+  <!-- 載入外部 CSS 樣式表 -->
+  <link rel="stylesheet" href="./style.css" />
+  <!-- 載入外部 JS 腳本 (加上 defer 確保 HTML 解析完畢後自動執行) -->
+  <script src="./main.js" defer></script>
 </head>
 <body>
 
@@ -505,7 +16,7 @@
     <header class="site-header" id="siteHeader">
       <div class="header-inner">
         <h1>香蕉老師的科學互動實驗室</h1>
-        <p class="subtitle">香蕉老師的教學百寶箱，透過即時互動與視覺化，讓物理化學更好懂!!</p>
+        <p class="subtitle">香蕉老師的教學模擬分享，透過即時互動與視覺化，讓物理化學更具象</p>
       </div>
     </header>
   </div>
@@ -514,7 +25,7 @@
   <div class="layout-container">
 
     <!-- 左側篩選欄 (參考 PhET 分類過濾器) -->
-    <aside class="filter-sidebar" aria-label="模擬教材篩選條件">
+    <aside class="filter-sidebar" aria-label="篩選條件">
       <div class="sidebar-search">
         <input
           type="search"
@@ -528,7 +39,7 @@
       <!-- 篩選群組 1：學科領域 -->
       <div class="filter-group">
         <button type="button" class="group-toggle" aria-expanded="true" onclick="toggleGroup(this)">
-          <span>領域</span>
+          <span>學科領域</span>
           <span class="chevron">▼</span>
         </button>
         <div class="group-collapse">
@@ -546,13 +57,6 @@
                 <span>化學</span>
               </span>
               <span class="item-count" data-count-for="chemistry">(0)</span>
-            </label>
-            <label class="checkbox-label">
-              <span class="checkbox-left">
-                <input type="checkbox" name="domain" value="others" data-label="其他" />
-                <span>其他</span>
-              </span>
-              <span class="item-count" data-count-for="others">(0)</span>
             </label>
           </div>
         </div>
@@ -636,7 +140,7 @@
             </label>
             <label class="checkbox-label">
               <span class="checkbox-left">
-                <input type="checkbox" name="grade" value="gifted" data-label="資優" />
+                <input type="checkbox" name="grade" value="gifted" data-label="資優加深加廣" />
                 <span>資優</span>
               </span>
               <span class="item-count" data-count-for="gifted">(0)</span>
@@ -648,10 +152,10 @@
 
     <!-- 右側模擬教材清單 -->
     <main class="catalog-main">
-      <!-- 3. 動態篩選條件移除列（左）與結果統計（右）位置已對調 -->
+      <!-- 動態篩選條件移除列（左）與結果統計（右） -->
       <div class="catalog-toolbar">
         <div class="active-filters" id="activeFilters"></div>
-        <div class="result-stats" id="resultStats">顯示 5 個模擬教材</div>
+        <div class="result-stats" id="resultStats">顯示 5 個</div>
       </div>
 
       <!-- 模擬教材卡片網格 -->
@@ -674,7 +178,7 @@
           </div>
           <div class="card-body">
             <div class="sim-meta">物理 · 波動與聲音 · 八年級</div>
-            <h2 class="sim-title">波動模擬器</h2>
+            <h2 class="sim-title">波動物理模擬器</h2>
             <p class="sim-desc">調整頻率、振幅與波速，觀察橫波、縱波傳播特性與介質質點振動的即時關係。</p>
           </div>
         </a>
@@ -684,9 +188,9 @@
           <div class="thumb-wrapper">
             <img
               src="./simulations/kinematics_simulator/thumbnail.png"
-              alt="直線運動模擬操作畫面"
+              alt="運動學與拋體模擬操作畫面"
               loading="lazy"
-              onerror="handleThumbError(this, '直線運動模擬')"
+              onerror="handleThumbError(this, '運動學與拋體模擬')"
             />
             <div class="play-overlay">
               <div class="play-circle" aria-hidden="true">
@@ -695,9 +199,9 @@
             </div>
           </div>
           <div class="card-body">
-            <div class="sim-meta">物理 · 力學與運動 · 九年級 · 資優</div>
-            <h2 class="sim-title">直線運動實驗室</h2>
-            <p class="sim-desc">探索位置、速度與加速度的向量關係，並透過數據圖表分析等加速。</p>
+            <div class="sim-meta">物理 · 力學與運動 · 九年級 / 資優加深加廣</div>
+            <h2 class="sim-title">運動學與拋體模擬</h2>
+            <p class="sim-desc">探索位置、速度與加速度的向量關係，並透過數據圖表分析等加速與二維拋體運動。</p>
           </div>
         </a>
 
@@ -718,7 +222,7 @@
           </div>
           <div class="card-body">
             <div class="sim-meta">物理 · 電磁與電路 · 九年級</div>
-            <h2 class="sim-title">電學實驗室</h2>
+            <h2 class="sim-title">虛擬電路實驗室</h2>
             <p class="sim-desc">自由串聯與並聯電池、電阻與燈泡，即時量測電壓與電流變化，驗證歐姆定律。</p>
           </div>
         </a>
@@ -762,7 +266,7 @@
           </div>
           <div class="card-body">
             <div class="sim-meta">化學 · 物質與原子 · 八年級</div>
-            <h2 class="sim-title">原子模型與元素探索</h2>
+            <h2 class="sim-title">原子模型與粒子探索</h2>
             <p class="sim-desc">自由增減質子、中子與電子，觀察原子序、質量數、電荷狀態與元素穩定度的變化。</p>
           </div>
         </a>
@@ -771,7 +275,7 @@
 
       <!-- 無符合篩選結果時的提示畫面 -->
       <div class="empty-state hidden" id="emptyState">
-        <p>找不到符合目前篩選條件</p>
+        <p>找不到同時符合目前篩選條件的模擬。</p>
         <button type="button" class="reset-btn" onclick="clearAllFilters()">清除所有篩選條件</button>
       </div>
     </main>
@@ -782,154 +286,5 @@
     <p>© BananScience 香蕉老師的科學互動實驗室 · Powered by AI Studio &amp; GitHub Actions</p>
   </footer>
 
-  <script>
-    // 1. 滾動監聽：當向下滾動超過原標頭範圍時，縮小標頭並隱藏小標題
-    const siteHeader = document.getElementById('siteHeader');
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 40) {
-        siteHeader.classList.add('scrolled');
-      } else {
-        siteHeader.classList.remove('scrolled');
-      }
-    }, { passive: true });
-
-    // 當 simulations/[project_name]/thumbnail.png 尚未放置時，自動產生 SVG 預覽圖避免破圖
-    function handleThumbError(imgEl, titleText) {
-      imgEl.onerror = null;
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
-        <defs>
-          <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#0f172a"/>
-            <stop offset="100%" stop-color="#1e3a8a"/>
-          </linearGradient>
-        </defs>
-        <rect width="640" height="360" fill="url(#g)"/>
-        <circle cx="320" cy="155" r="38" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="6 4" opacity="0.7"/>
-        <polygon points="312,140 312,170 336,155" fill="#38bdf8"/>
-        <text x="320" y="235" text-anchor="middle" fill="#e2e8f0" font-family="sans-serif" font-size="22" font-weight="bold">${titleText}</text>
-        <text x="320" y="265" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="13">點擊啟動互動模擬</text>
-      </svg>`;
-      imgEl.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
-    }
-
-    // 2. 展開／收合左側篩選群組（搭配 CSS Grid 1fr <-> 0fr 平滑動畫）
-    function toggleGroup(btn) {
-      const group = btn.closest('.filter-group');
-      const isCollapsed = group.classList.toggle('collapsed');
-      btn.setAttribute('aria-expanded', String(!isCollapsed));
-    }
-
-    // 解析每張卡片的複數 data-category 標籤（支援空白或逗號分隔）
-    function getCardTags(card) {
-      const raw = card.dataset.category || '';
-      return raw.split(/[\s,]+/).map(t => t.trim()).filter(Boolean);
-    }
-
-    const cards = Array.from(document.querySelectorAll('.sim-card'));
-    const checkboxes = Array.from(document.querySelectorAll('.filter-sidebar input[type="checkbox"]'));
-    const searchInput = document.getElementById('searchInput');
-    const resultStats = document.getElementById('resultStats');
-    const activeFiltersContainer = document.getElementById('activeFilters');
-    const emptyState = document.getElementById('emptyState');
-
-    // 初始化計算左側每個分類標籤的教材數量
-    function initCategoryCounts() {
-      document.querySelectorAll('[data-count-for]').forEach(countSpan => {
-        const tag = countSpan.getAttribute('data-count-for');
-        const count = cards.filter(card => getCardTags(card).includes(tag)).length;
-        countSpan.textContent = `(${count})`;
-      });
-    }
-
-    // 執行複合篩選（同群組內 OR 聯集、跨群組間 AND 交集 + 關鍵字搜尋）
-    function applyFilters() {
-      const keyword = searchInput.value.trim().toLowerCase();
-
-      // 依群組名稱 (domain, topic, grade) 整理目前已勾選的項目
-      const activeGroups = {};
-      const selectedCheckboxes = [];
-
-      checkboxes.forEach(cb => {
-        if (cb.checked) {
-          selectedCheckboxes.push(cb);
-          if (!activeGroups[cb.name]) {
-            activeGroups[cb.name] = [];
-          }
-          activeGroups[cb.name].push(cb.value);
-        }
-      });
-
-      let visibleCount = 0;
-
-      cards.forEach(card => {
-        const tags = getCardTags(card);
-        const textContent = card.textContent.toLowerCase();
-
-        // 1. 檢查關鍵字
-        const matchesKeyword = !keyword || textContent.includes(keyword);
-
-        // 2. 檢查每個有勾選的群組是否都至少符合一項 (跨群組 AND，同群組 OR)
-        const matchesAllGroups = Object.values(activeGroups).every(groupSelectedValues => {
-          return groupSelectedValues.some(val => tags.includes(val));
-        });
-
-        if (matchesKeyword && matchesAllGroups) {
-          card.classList.remove('hidden');
-          visibleCount++;
-        } else {
-          card.classList.add('hidden');
-        }
-      });
-
-      // 更新數量與空白狀態
-      resultStats.textContent = `顯示 ${visibleCount} 個模擬教材`;
-      emptyState.classList.toggle('hidden', visibleCount > 0);
-
-      // 更新上方可點擊移除的篩選條件列
-      renderActiveFilterChips(selectedCheckboxes, keyword);
-    }
-
-    // 產生已選條件的移除按鈕
-    function renderActiveFilterChips(selectedCheckboxes, keyword) {
-      activeFiltersContainer.innerHTML = '';
-
-      selectedCheckboxes.forEach(cb => {
-        const chip = document.createElement('button');
-        chip.type = 'button';
-        chip.className = 'filter-chip-btn';
-        chip.innerHTML = `<span>${cb.dataset.label}</span> <span aria-hidden="true">×</span>`;
-        chip.title = `移除「${cb.dataset.label}」篩選條件`;
-        chip.onclick = () => {
-          cb.checked = false;
-          applyFilters();
-        };
-        activeFiltersContainer.appendChild(chip);
-      });
-
-      if (selectedCheckboxes.length > 0 || keyword) {
-        const clearBtn = document.createElement('button');
-        clearBtn.type = 'button';
-        clearBtn.className = 'clear-all-btn';
-        clearBtn.textContent = '清除全部';
-        clearBtn.onclick = clearAllFilters;
-        activeFiltersContainer.appendChild(clearBtn);
-      }
-    }
-
-    // 一鍵清除所有篩選條件
-    function clearAllFilters() {
-      checkboxes.forEach(cb => (cb.checked = false));
-      searchInput.value = '';
-      applyFilters();
-    }
-
-    // 綁定監聽器
-    checkboxes.forEach(cb => cb.addEventListener('change', applyFilters));
-    searchInput.addEventListener('input', applyFilters);
-
-    // 啟動初始化
-    initCategoryCounts();
-    applyFilters();
-  </script>
 </body>
 </html>
