@@ -62,34 +62,3 @@
     }
   ]
 }
-
-[
-  {
-    "id": "wave_physic",
-    "title": "波動模擬器",
-    "meta": "物理 · 波動與聲音 · 八年級 · 資優",
-    "desc": "調整頻率、波速與振幅，觀察不同波的傳播方式與介質振動的關係。",
-    "categories": ["physics", "wave", "grade_8", "gifted"]
-  },
-  {
-    "id": "kinematics_simulator",
-    "title": "直線運動實驗室",
-    "meta": "物理 · 力學與運動 · 九年級 · 資優",
-    "desc": "探索物體直線運動x-t、v-t、a-t圖與與物體運動的過程。支援自定義圖形的運動過程",
-    "categories": ["physics", "kinematics", "grade_9", "gifted"]
-  },
-  {
-    "id": "circuit_lab",
-    "title": "電學實驗室",
-    "meta": "物理 · 電磁與電路 · 九年級",
-    "desc": "自由串聯與並聯電池、電阻與燈泡，即時量測電壓與電流變化。3D模擬電位的概念，用不同的角度認識串並聯",
-    "categories": ["physics", "electricity", "grade_9", "gifted"]
-  },
-  {
-    "id": "atom",
-    "title": "元素的電子組態",
-    "meta": "化學 · 物質與原子 · 八年級 · 資優",
-    "desc": "視覺畫不同元素的電子排列方式。",
-    "categories": ["chemistry", "matter", "grade_8", "gifted"]
-  }
-]
