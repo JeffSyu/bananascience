@@ -5,8 +5,7 @@
       "title": "學科領域",
       "options": [
         { "value": "physics", "label": "物理" },
-        { "value": "chemistry", "label": "化學" },
-        { "value": "others", "label": "其他" }
+        { "value": "chemistry", "label": "化學" }
       ]
     },
     {
@@ -27,38 +26,45 @@
         { "value": "grade_7", "label": "七年級" },
         { "value": "grade_8", "label": "八年級" },
         { "value": "grade_9", "label": "九年級" },
-        { "value": "gifted", "label": "資優", "chipLabel": "資優" }
+        { "value": "gifted", "label": "資優", "chipLabel": "資優加深加廣" }
       ]
     }
   ],
   "simulations": [
     {
       "id": "wave_physic",
-      "title": "波動模擬器",
-      "meta": "物理 · 波動與聲音 · 八年級 · 資優",
-      "desc": "調整頻率、波速與振幅，觀察不同波的傳播方式與介質振動的關係。",
-      "categories": ["physics", "wave", "grade_8", "gifted"]
+      "title": "波動物理模擬器",
+      "meta": "物理 · 波動與聲音 · 八年級",
+      "desc": "調整頻率、振幅與波速，觀察橫波、縱波傳播特性與介質質點振動的即時關係。",
+      "categories": ["physics", "wave", "grade_8"]
     },
     {
       "id": "kinematics_simulator",
-      "title": "直線運動實驗室",
-      "meta": "物理 · 力學與運動 · 九年級 · 資優",
-      "desc": "探索物體直線運動x-t、v-t、a-t圖與與物體運動的過程。支援自定義圖形的運動過程",
+      "title": "運動學與拋體模擬",
+      "meta": "物理 · 力學與運動 · 九年級 / 資優加深加廣",
+      "desc": "探索位置、速度與加速度的向量關係，並透過數據圖表分析等加速與二維拋體運動。",
       "categories": ["physics", "kinematics", "grade_9", "gifted"]
     },
     {
       "id": "circuit_lab",
-      "title": "電學實驗室",
+      "title": "虛擬電路實驗室",
       "meta": "物理 · 電磁與電路 · 九年級",
-      "desc": "自由串聯與並聯電池、電阻與燈泡，即時量測電壓與電流變化。3D模擬電位的概念，用不同的角度認識串並聯",
-      "categories": ["physics", "electricity", "grade_9", "gifted"]
+      "desc": "自由串聯與並聯電池、電阻與燈泡，即時量測電壓與電流變化，驗證歐姆定律。",
+      "categories": ["physics", "electricity", "grade_9"]
+    },
+    {
+      "id": "eyesoptical",
+      "title": "眼球成像與光學矯正",
+      "meta": "物理 · 光學與視覺 · 八年級",
+      "desc": "模擬水晶體焦距調節、近視與遠視成因，並觀察凹凸透鏡如何修正光線聚焦於視網膜。",
+      "categories": ["physics", "optics", "grade_8"]
     },
     {
       "id": "atom",
-      "title": "元素的電子組態",
-      "meta": "化學 · 物質與原子 · 八年級 · 資優",
-      "desc": "視覺畫不同元素的電子排列方式。",
-      "categories": ["chemistry", "matter", "grade_8", "gifted"]
+      "title": "原子模型與粒子探索",
+      "meta": "化學 · 物質與原子 · 八年級",
+      "desc": "自由增減質子、中子與電子，觀察原子序、質量數、電荷狀態與元素穩定度的變化。",
+      "categories": ["chemistry", "matter", "grade_8"]
     }
   ]
 }
