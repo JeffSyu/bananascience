@@ -32,7 +32,10 @@ jobs:
       - name: 3. 建立發布目錄並打包所有模擬專案
         run: |
           mkdir -p dist
-          cp index.html dist/
+          
+          # 【唯一修改處】將拆分後的 index.html、style.css、main.js 一併複製到發布目錄
+          cp index.html style.css main.js dist/
+          
           [ -d "favicon" ] && cp -r favicon dist/ || true
 
           if [ -d "simulations" ]; then
