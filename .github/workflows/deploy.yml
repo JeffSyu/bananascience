@@ -2,7 +2,7 @@ name: Fast Build and Deploy Sims
 
 on:
   push:
-    branches: ["auto-load"]
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -33,7 +33,6 @@ jobs:
         run: |
           mkdir -p dist
           
-          # 【修改處】將 index.html、style.css、main.js 與 sims-data.json 一併複製到發布目錄
           cp index.html style.css main.js sims-data.json dist/
           
           [ -d "favicon" ] && cp -r favicon dist/ || true
