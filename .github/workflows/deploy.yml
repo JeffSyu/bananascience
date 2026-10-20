@@ -2,7 +2,7 @@ name: Fast Build and Deploy Sims
 
 on:
   push:
-    branches: ["auto-load"]
+    branches: ["aotu-load"]
   workflow_dispatch:
 
 permissions:
@@ -32,7 +32,7 @@ jobs:
       - name: 3. 建立發布目錄並打包所有模擬專案
         run: |
           mkdir -p dist
-
+          
           cp index.html style.css main.js sims-data.json dist/
           
           [ -d "favicon" ] && cp -r favicon dist/ || true
