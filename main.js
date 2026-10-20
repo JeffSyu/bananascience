@@ -1,147 +1,176 @@
-// 1. 滾動監聽：當向下滾動超過原標頭範圍時，縮小標頭並隱藏小標題
-const siteHeader = document.getElementById('siteHeader');
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 40) {
-    siteHeader.classList.add('scrolled');
-  } else {
-    siteHeader.classList.remove('scrolled');
-  }
-}, { passive: true });
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>香蕉老師的科學互動實驗室</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script src="./main.js" defer></script>
+</head>
+<body>
 
-// 當 simulations/[project_name]/thumbnail.png 尚未放置時，自動產生 SVG 預覽圖避免破圖
-function handleThumbError(imgEl, titleText) {
-  imgEl.onerror = null;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
-    <defs>
-      <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#0f172a"/>
-        <stop offset="100%" stop-color="#1e3a8a"/>
-      </linearGradient>
-    </defs>
-    <rect width="640" height="360" fill="url(#g)"/>
-    <circle cx="320" cy="155" r="38" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="6 4" opacity="0.7"/>
-    <polygon points="312,140 312,170 336,155" fill="#38bdf8"/>
-    <text x="320" y="235" text-anchor="middle" fill="#e2e8f0" font-family="sans-serif" font-size="22" font-weight="bold">${titleText}</text>
-    <text x="320" y="265" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="13">點擊啟動互動模擬</text>
-  </svg>`;
-  imgEl.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
-}
+  <!-- 標頭區：固定於畫面最上方，向下滾動時自動向上縮小、靠左並隱藏小標題 -->
+  <div class="header-spacer">
+    <header class="site-header" id="siteHeader">
+      <div class="header-inner">
+        <h1>香蕉老師的科學互動實驗室</h1>
+        <p class="subtitle">香蕉老師的教學模擬分享，透過即時互動與視覺化，讓物理化學更具象</p>
+      </div>
+    </header>
+  </div>
 
-// 2. 展開／收合左側篩選群組（搭配 CSS Grid 1fr <-> 0fr 平滑動畫）
-function toggleGroup(btn) {
-  const group = btn.closest('.filter-group');
-  const isCollapsed = group.classList.toggle('collapsed');
-  btn.setAttribute('aria-expanded', String(!isCollapsed));
-}
+  <!-- 主內容雙欄容器 -->
+  <div class="layout-container">
 
-// 解析每張卡片的複數 data-category 標籤（支援空白或逗號分隔）
-function getCardTags(card) {
-  const raw = card.dataset.category || '';
-  return raw.split(/[\s,]+/).map(t => t.trim()).filter(Boolean);
-}
+    <!-- 左側篩選欄 -->
+    <aside class="filter-sidebar" aria-label="模擬篩選條件">
+      <div class="sidebar-search">
+        <input
+          type="search"
+          id="searchInput"
+          class="search-input"
+          placeholder="搜尋模擬名稱或關鍵字..."
+          aria-label="搜尋模擬名稱或關鍵字"
+        />
+      </div>
 
-const cards = Array.from(document.querySelectorAll('.sim-card'));
-const checkboxes = Array.from(document.querySelectorAll('.filter-sidebar input[type="checkbox"]'));
-const searchInput = document.getElementById('searchInput');
-const resultStats = document.getElementById('resultStats');
-const activeFiltersContainer = document.getElementById('activeFilters');
-const emptyState = document.getElementById('emptyState');
+      <!-- 篩選群組 1：學科領域 -->
+      <div class="filter-group">
+        <button type="button" class="group-toggle" aria-expanded="true" onclick="toggleGroup(this)">
+          <span>學科領域</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="group-collapse">
+          <div class="group-options">
+            <label class="checkbox-label">
+              <span class="checkbox-left">
+                <input type="checkbox" name="domain" value="physics" data-label="物理" />
+                <span>物理</span>
+              </span>
+              <span class="item-count" data-count-for="physics">(0)</span>
+            </label>
+            <label class="checkbox-label">
+              <span class="checkbox-left">
+                <input type="checkbox" name="domain" value="chemistry" data-label="化學" />
+                <span>化學</span>
+              </span>
+              <span class="item-count" data-count-for="chemistry">(0)</span>
+            </label>
+          </div>
+        </div>
+      </div>
 
-// 初始化計算左側每個分類標籤的教材數量
-function initCategoryCounts() {
-  document.querySelectorAll('[data-count-for]').forEach(countSpan => {
-    const tag = countSpan.getAttribute('data-count-for');
-    const count = cards.filter(card => getCardTags(card).includes(tag)).length;
-    countSpan.textContent = `(${count})`;
-  });
-}
+      <!-- 篩選群組 2：單元主題 -->
+      <div class="filter-group">
+        <button type="button" class="group-toggle" aria-expanded="true" onclick="toggleGroup(this)">
+          <span>單元主題</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="group-collapse">
+          <div class="group-options">
+            <label class="checkbox-label">
+              <span class="checkbox-left">
+                <input type="checkbox" name="topic" value="kinematics" data-label="力學與運動" />
+                <span>力學與運動</span>
+              </span>
+              <span class="item-count" data-count-for="kinematics">(0)</span>
+            </label>
+            <label class="checkbox-label">
+              <span class="checkbox-left">
+                <input type="checkbox" name="topic" value="wave" data-label="波動與聲音" />
+                <span>波動與聲音</span>
+              </span>
+              <span class="item-count" data-count-for="wave">(0)</span>
+            </label>
+            <label class="checkbox-label">
+              <span class="checkbox-left">
+                <input type="checkbox" name="topic" value="optics" data-label="光學與視覺" />
+                <span>光學與視覺</span>
+              </span>
+              <span class="item-count" data-count-for="optics">(0)</span>
+            </label>
+            <label class="checkbox-label">
+              <span class="checkbox-left">
+                <input type="checkbox" name="topic" value="electricity" data-label="電磁與電路" />
+                <span>電磁與電路</span>
+              </span>
+              <span class="item-count" data-count-for="electricity">(0)</span>
+            </label>
+            <label class="checkbox-label">
+              <span class="checkbox-left">
+                <input type="checkbox" name="topic" value="matter" data-label="物質與原子" />
+                <span>物質與原子</span>
+              </span>
+              <span class="item-count" data-count-for="matter">(0)</span>
+            </label>
+          </div>
+        </div>
+      </div>
 
-// 執行複合篩選（同群組內 OR 聯集、跨群組間 AND 交集 + 關鍵字搜尋）
-function applyFilters() {
-  const keyword = searchInput.value.trim().toLowerCase();
+      <!-- 篩選群組 3：適用年級 -->
+      <div class="filter-group">
+        <button type="button" class="group-toggle" aria-expanded="true" onclick="toggleGroup(this)">
+          <span>適用年級</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="group-collapse">
+          <div class="group-options">
+            <label class="checkbox-label">
+              <span class="checkbox-left">
+                <input type="checkbox" name="grade" value="grade_7" data-label="七年級" />
+                <span>七年級</span>
+              </span>
+              <span class="item-count" data-count-for="grade_7">(0)</span>
+            </label>
+            <label class="checkbox-label">
+              <span class="checkbox-left">
+                <input type="checkbox" name="grade" value="grade_8" data-label="八年級" />
+                <span>八年級</span>
+              </span>
+              <span class="item-count" data-count-for="grade_8">(0)</span>
+            </label>
+            <label class="checkbox-label">
+              <span class="checkbox-left">
+                <input type="checkbox" name="grade" value="grade_9" data-label="九年級" />
+                <span>九年級</span>
+              </span>
+              <span class="item-count" data-count-for="grade_9">(0)</span>
+            </label>
+            <label class="checkbox-label">
+              <span class="checkbox-left">
+                <input type="checkbox" name="grade" value="gifted" data-label="資優加深加廣" />
+                <span>資優</span>
+              </span>
+              <span class="item-count" data-count-for="gifted">(0)</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </aside>
 
-  // 依群組名稱 (domain, topic, grade) 整理目前已勾選的項目
-  const activeGroups = {};
-  const selectedCheckboxes = [];
+    <!-- 右側模擬教材清單 -->
+    <main class="catalog-main">
+      <!-- 動態篩選條件移除列（左）與結果統計（右） -->
+      <div class="catalog-toolbar">
+        <div class="active-filters" id="activeFilters"></div>
+        <div class="result-stats" id="resultStats">載入模擬中...</div>
+      </div>
 
-  checkboxes.forEach(cb => {
-    if (cb.checked) {
-      selectedCheckboxes.push(cb);
-      if (!activeGroups[cb.name]) {
-        activeGroups[cb.name] = [];
-      }
-      activeGroups[cb.name].push(cb.value);
-    }
-  });
+      <!-- 模擬教材卡片網格（由 main.js 讀取 sims-data.json 自動生成） -->
+      <div class="sim-grid" id="simGrid"></div>
 
-  let visibleCount = 0;
+      <!-- 無符合篩選結果時的提示畫面 -->
+      <div class="empty-state hidden" id="emptyState">
+        <p id="emptyStateText">找不到同時符合目前篩選條件的模擬。</p>
+        <button type="button" class="reset-btn" id="resetFilterBtn" onclick="clearAllFilters()">清除所有篩選條件</button>
+      </div>
+    </main>
 
-  cards.forEach(card => {
-    const tags = getCardTags(card);
-    const textContent = card.textContent.toLowerCase();
+  </div>
 
-    // 1. 檢查關鍵字
-    const matchesKeyword = !keyword || textContent.includes(keyword);
+  <footer>
+    <p>© BananScience 香蕉老師的科學互動實驗室 · Powered by AI Studio &amp; GitHub Actions</p>
+  </footer>
 
-    // 2. 檢查每個有勾選的群組是否都至少符合一項 (跨群組 AND，同群組 OR)
-    const matchesAllGroups = Object.values(activeGroups).every(groupSelectedValues => {
-      return groupSelectedValues.some(val => tags.includes(val));
-    });
-
-    if (matchesKeyword && matchesAllGroups) {
-      card.classList.remove('hidden');
-      visibleCount++;
-    } else {
-      card.classList.add('hidden');
-    }
-  });
-
-  // 更新數量與空白狀態
-  resultStats.textContent = `顯示 ${visibleCount} 個模擬教材`;
-  emptyState.classList.toggle('hidden', visibleCount > 0);
-
-  // 更新上方可點擊移除的篩選條件列
-  renderActiveFilterChips(selectedCheckboxes, keyword);
-}
-
-// 產生已選條件的移除按鈕
-function renderActiveFilterChips(selectedCheckboxes, keyword) {
-  activeFiltersContainer.innerHTML = '';
-
-  selectedCheckboxes.forEach(cb => {
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'filter-chip-btn';
-    chip.innerHTML = `<span>${cb.dataset.label}</span> <span aria-hidden="true">×</span>`;
-    chip.title = `移除「${cb.dataset.label}」篩選條件`;
-    chip.onclick = () => {
-      cb.checked = false;
-      applyFilters();
-    };
-    activeFiltersContainer.appendChild(chip);
-  });
-
-  if (selectedCheckboxes.length > 0 || keyword) {
-    const clearBtn = document.createElement('button');
-    clearBtn.type = 'button';
-    clearBtn.className = 'clear-all-btn';
-    clearBtn.textContent = '清除全部';
-    clearBtn.onclick = clearAllFilters;
-    activeFiltersContainer.appendChild(clearBtn);
-  }
-}
-
-// 一鍵清除所有篩選條件
-function clearAllFilters() {
-  checkboxes.forEach(cb => (cb.checked = false));
-  searchInput.value = '';
-  applyFilters();
-}
-
-// 綁定監聽器
-checkboxes.forEach(cb => cb.addEventListener('change', applyFilters));
-searchInput.addEventListener('input', applyFilters);
-
-// 啟動初始化
-initCategoryCounts();
-applyFilters();
+</body>
+</html>
