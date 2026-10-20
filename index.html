@@ -4,9 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>香蕉老師的科學互動實驗室</title>
-  <!-- 載入外部 CSS 樣式表 -->
   <link rel="stylesheet" href="./style.css" />
-  <!-- 載入外部 JS 腳本 (加上 defer 確保 HTML 解析完畢後自動執行) -->
   <script src="./main.js" defer></script>
 </head>
 <body>
@@ -24,8 +22,8 @@
   <!-- 主內容雙欄容器 -->
   <div class="layout-container">
 
-    <!-- 左側篩選欄 (參考 PhET 分類過濾器) -->
-    <aside class="filter-sidebar" aria-label="篩選條件">
+    <!-- 左側篩選欄 -->
+    <aside class="filter-sidebar" aria-label="模擬篩選條件">
       <div class="sidebar-search">
         <input
           type="search"
@@ -150,133 +148,21 @@
       </div>
     </aside>
 
-    <!-- 右側模擬教材清單 -->
+    <!-- 右側模擬清單 -->
     <main class="catalog-main">
       <!-- 動態篩選條件移除列（左）與結果統計（右） -->
       <div class="catalog-toolbar">
         <div class="active-filters" id="activeFilters"></div>
-        <div class="result-stats" id="resultStats">顯示 5 個</div>
+        <div class="result-stats" id="resultStats">載入模擬中...</div>
       </div>
 
-      <!-- 模擬教材卡片網格 -->
-      <div class="sim-grid" id="simGrid">
-
-        <!-- 1. 波動物理模擬 (simulations/wave_physic) -->
-        <a href="./sims/wave_physic/" class="sim-card" data-category="physics wave grade_8">
-          <div class="thumb-wrapper">
-            <img
-              src="./simulations/wave_physic/thumbnail.png"
-              alt="波動物理模擬器操作畫面"
-              loading="lazy"
-              onerror="handleThumbError(this, '波動物理模擬器')"
-            />
-            <div class="play-overlay">
-              <div class="play-circle" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="sim-meta">物理 · 波動與聲音 · 八年級</div>
-            <h2 class="sim-title">波動物理模擬器</h2>
-            <p class="sim-desc">調整頻率、振幅與波速，觀察橫波、縱波傳播特性與介質質點振動的即時關係。</p>
-          </div>
-        </a>
-
-        <!-- 2. 運動學與拋體模擬 (simulations/kinematics_simulator) -->
-        <a href="./sims/kinematics_simulator/" class="sim-card" data-category="physics kinematics grade_9 gifted">
-          <div class="thumb-wrapper">
-            <img
-              src="./simulations/kinematics_simulator/thumbnail.png"
-              alt="運動學與拋體模擬操作畫面"
-              loading="lazy"
-              onerror="handleThumbError(this, '運動學與拋體模擬')"
-            />
-            <div class="play-overlay">
-              <div class="play-circle" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="sim-meta">物理 · 力學與運動 · 九年級 / 資優加深加廣</div>
-            <h2 class="sim-title">運動學與拋體模擬</h2>
-            <p class="sim-desc">探索位置、速度與加速度的向量關係，並透過數據圖表分析等加速與二維拋體運動。</p>
-          </div>
-        </a>
-
-        <!-- 3. 虛擬電路實驗室 (simulations/circuit_lab) -->
-        <a href="./sims/circuit_lab/" class="sim-card" data-category="physics electricity grade_9">
-          <div class="thumb-wrapper">
-            <img
-              src="./simulations/circuit_lab/thumbnail.png"
-              alt="虛擬電路實驗室操作畫面"
-              loading="lazy"
-              onerror="handleThumbError(this, '虛擬電路實驗室')"
-            />
-            <div class="play-overlay">
-              <div class="play-circle" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="sim-meta">物理 · 電磁與電路 · 九年級</div>
-            <h2 class="sim-title">虛擬電路實驗室</h2>
-            <p class="sim-desc">自由串聯與並聯電池、電阻與燈泡，即時量測電壓與電流變化，驗證歐姆定律。</p>
-          </div>
-        </a>
-
-        <!-- 4. 眼球成像與光學矯正 (simulations/eyesoptical) -->
-        <a href="./sims/eyesoptical/" class="sim-card" data-category="physics optics grade_8">
-          <div class="thumb-wrapper">
-            <img
-              src="./simulations/eyesoptical/thumbnail.png"
-              alt="眼球成像與光學矯正操作畫面"
-              loading="lazy"
-              onerror="handleThumbError(this, '眼球成像與光學矯正')"
-            />
-            <div class="play-overlay">
-              <div class="play-circle" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="sim-meta">物理 · 光學與視覺 · 八年級</div>
-            <h2 class="sim-title">眼球成像與光學矯正</h2>
-            <p class="sim-desc">模擬水晶體焦距調節、近視與遠視成因，並觀察凹凸透鏡如何修正光線聚焦於視網膜。</p>
-          </div>
-        </a>
-
-        <!-- 5. 原子模型與粒子探索 (simulations/atom) -->
-        <a href="./sims/atom/" class="sim-card" data-category="chemistry matter grade_8">
-          <div class="thumb-wrapper">
-            <img
-              src="./simulations/atom/thumbnail.png"
-              alt="原子模型與粒子探索操作畫面"
-              loading="lazy"
-              onerror="handleThumbError(this, '原子模型與粒子探索')"
-            />
-            <div class="play-overlay">
-              <div class="play-circle" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="sim-meta">化學 · 物質與原子 · 八年級</div>
-            <h2 class="sim-title">原子模型與粒子探索</h2>
-            <p class="sim-desc">自由增減質子、中子與電子，觀察原子序、質量數、電荷狀態與元素穩定度的變化。</p>
-          </div>
-        </a>
-
-      </div>
+      <!-- 模擬卡片網格（由 main.js 讀取 sims-data.json 自動生成） -->
+      <div class="sim-grid" id="simGrid"></div>
 
       <!-- 無符合篩選結果時的提示畫面 -->
       <div class="empty-state hidden" id="emptyState">
-        <p>找不到同時符合目前篩選條件的模擬。</p>
-        <button type="button" class="reset-btn" onclick="clearAllFilters()">清除所有篩選條件</button>
+        <p id="emptyStateText">找不到同時符合目前篩選條件的模擬。</p>
+        <button type="button" class="reset-btn" id="resetFilterBtn" onclick="clearAllFilters()">清除所有篩選條件</button>
       </div>
     </main>
 
