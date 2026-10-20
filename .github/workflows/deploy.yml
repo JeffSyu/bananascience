@@ -2,7 +2,7 @@ name: Fast Build and Deploy Sims
 
 on:
   push:
-    branches: ["aotu-load"]
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
