@@ -27,27 +27,99 @@ function handleThumbError(imgEl, titleText) {
   imgEl.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
 
-// 2. 展開／收合左側篩選群組（搭配 CSS Grid 1fr <-> 0fr 平滑動畫）
+// 展開／收合左側篩選群組（搭配 CSS Grid 1fr <-> 0fr 平滑動畫）
 function toggleGroup(btn) {
   const group = btn.closest('.filter-group');
   const isCollapsed = group.classList.toggle('collapsed');
   btn.setAttribute('aria-expanded', String(!isCollapsed));
 }
 
-// 解析每張卡片的複數 data-category 標籤（支援空白或逗號分隔）
+// 解析每張卡片的複數 data-category 標籤
 function getCardTags(card) {
   const raw = card.dataset.category || '';
   return raw.split(/[\s,]+/).map(t => t.trim()).filter(Boolean);
 }
 
-const cards = Array.from(document.querySelectorAll('.sim-card'));
+const simGrid = document.getElementById('simGrid');
 const checkboxes = Array.from(document.querySelectorAll('.filter-sidebar input[type="checkbox"]'));
 const searchInput = document.getElementById('searchInput');
 const resultStats = document.getElementById('resultStats');
 const activeFiltersContainer = document.getElementById('activeFilters');
 const emptyState = document.getElementById('emptyState');
+const emptyStateText = document.getElementById('emptyStateText');
+const resetFilterBtn = document.getElementById('resetFilterBtn');
 
-// 初始化計算左側每個分類標籤的教材數量
+let cards = [];
+
+// 2. 根據 sims-data.json 自動建立所有卡片 DOM 元素
+function renderCards(simsData) {
+  simGrid.innerHTML = '';
+
+  simsData.forEach(sim => {
+    const categoriesStr = Array.isArray(sim.categories)
+      ? sim.categories.join(' ')
+      : String(sim.categories || '');
+
+    // 支援自訂 link 與 thumbnail，若未填則自動由 id 推算預設路徑
+    const simUrl = sim.link || `./sims/${sim.id}/`;
+    const thumbUrl = sim.thumbnail || `./simulations/${sim.id}/thumbnail.png`;
+
+    const card = document.createElement('a');
+    card.href = simUrl;
+    card.className = 'sim-card';
+    card.dataset.category = categoriesStr;
+
+    // 縮圖區塊
+    const thumbWrapper = document.createElement('div');
+    thumbWrapper.className = 'thumb-wrapper';
+
+    const img = document.createElement('img');
+    img.src = thumbUrl;
+    img.alt = `${sim.title}操作畫面`;
+    img.loading = 'lazy';
+    img.onerror = () => handleThumbError(img, sim.title);
+
+    const playOverlay = document.createElement('div');
+    playOverlay.className = 'play-overlay';
+    playOverlay.innerHTML = `
+      <div class="play-circle" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    `;
+
+    thumbWrapper.appendChild(img);
+    thumbWrapper.appendChild(playOverlay);
+
+    // 文字內容區塊
+    const cardBody = document.createElement('div');
+    cardBody.className = 'card-body';
+
+    const metaDiv = document.createElement('div');
+    metaDiv.className = 'sim-meta';
+    metaDiv.textContent = sim.meta || '';
+
+    const titleH2 = document.createElement('h2');
+    titleH2.className = 'sim-title';
+    titleH2.textContent = sim.title || '';
+
+    const descP = document.createElement('p');
+    descP.className = 'sim-desc';
+    descP.textContent = sim.desc || '';
+
+    cardBody.appendChild(metaDiv);
+    cardBody.appendChild(titleH2);
+    cardBody.appendChild(descP);
+
+    card.appendChild(thumbWrapper);
+    card.appendChild(cardBody);
+    simGrid.appendChild(card);
+  });
+
+  // 更新全域卡片陣列供篩選器使用
+  cards = Array.from(simGrid.querySelectorAll('.sim-card'));
+}
+
+// 計算左側每個分類標籤的教材數量
 function initCategoryCounts() {
   document.querySelectorAll('[data-count-for]').forEach(countSpan => {
     const tag = countSpan.getAttribute('data-count-for');
@@ -60,7 +132,6 @@ function initCategoryCounts() {
 function applyFilters() {
   const keyword = searchInput.value.trim().toLowerCase();
 
-  // 依群組名稱 (domain, topic, grade) 整理目前已勾選的項目
   const activeGroups = {};
   const selectedCheckboxes = [];
 
@@ -80,10 +151,7 @@ function applyFilters() {
     const tags = getCardTags(card);
     const textContent = card.textContent.toLowerCase();
 
-    // 1. 檢查關鍵字
     const matchesKeyword = !keyword || textContent.includes(keyword);
-
-    // 2. 檢查每個有勾選的群組是否都至少符合一項 (跨群組 AND，同群組 OR)
     const matchesAllGroups = Object.values(activeGroups).every(groupSelectedValues => {
       return groupSelectedValues.some(val => tags.includes(val));
     });
@@ -96,11 +164,9 @@ function applyFilters() {
     }
   });
 
-  // 更新數量與空白狀態
   resultStats.textContent = `顯示 ${visibleCount} 個模擬教材`;
   emptyState.classList.toggle('hidden', visibleCount > 0);
 
-  // 更新上方可點擊移除的篩選條件列
   renderActiveFilterChips(selectedCheckboxes, keyword);
 }
 
@@ -138,10 +204,27 @@ function clearAllFilters() {
   applyFilters();
 }
 
-// 綁定監聽器
+// 3. 讀取 sims-data.json 並啟動網站
+async function loadSimulations() {
+  try {
+    const response = await fetch('./sims-data.json');
+    if (!response.ok) {
+      throw new Error(`HTTP 錯誤碼: ${response.status}`);
+    }
+    const simsData = await response.json();
+    renderCards(simsData);
+    initCategoryCounts();
+    applyFilters();
+  } catch (error) {
+    console.error('無法載入 sims-data.json:', error);
+    resultStats.textContent = '顯示 0 個模擬教材';
+    emptyStateText.textContent = '無法讀取 sims-data.json 清單檔案（若在電腦本地端預覽，請使用 VS Code Live Server 開啟）。';
+    resetFilterBtn.classList.add('hidden');
+    emptyState.classList.remove('hidden');
+  }
+}
+
+// 綁定監聽器並啟動
 checkboxes.forEach(cb => cb.addEventListener('change', applyFilters));
 searchInput.addEventListener('input', applyFilters);
-
-// 啟動初始化
-initCategoryCounts();
-applyFilters();
+loadSimulations();
