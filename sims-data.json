@@ -2,20 +2,20 @@
   "filterGroups": [
     {
       "id": "domain",
-      "title": "學科領域",
+      "title": "類別",
       "options": [
         { "value": "physics", "label": "物理" },
-        { "value": "chemistry", "label": "化學" }
+        { "value": "chemistry", "label": "化學" },
+        { "value": "others", "label": "其他" }
       ]
     },
     {
       "id": "topic",
       "title": "單元主題",
       "options": [
-        { "value": "kinematics", "label": "力學與運動" },
-        { "value": "wave", "label": "波動與聲音" },
-        { "value": "optics", "label": "光學與視覺" },
-        { "value": "electricity", "label": "電磁與電路" },
+        { "value": "kinematics", "label": "力與運動" },
+        { "value": "wave_light", "label": "波與光" },
+        { "value": "electricity", "label": "電與磁" },
         { "value": "matter", "label": "物質與原子" }
       ]
     },
@@ -36,7 +36,7 @@
       "title": "波動物理模擬器",
       "meta": "物理 · 波動與聲音 · 八年級",
       "desc": "調整頻率、振幅與波速，觀察橫波、縱波傳播特性與介質質點振動的即時關係。",
-      "categories": ["physics", "wave", "grade_8"]
+      "categories": ["physics", "wave_light", "grade_8"]
     },
     {
       "id": "kinematics_simulator",
@@ -51,13 +51,6 @@
       "meta": "物理 · 電磁與電路 · 九年級",
       "desc": "自由串聯與並聯電池、電阻與燈泡，即時量測電壓與電流變化，驗證歐姆定律。",
       "categories": ["physics", "electricity", "grade_9"]
-    },
-    {
-      "id": "eyesoptical",
-      "title": "眼球成像與光學矯正",
-      "meta": "物理 · 光學與視覺 · 八年級",
-      "desc": "模擬水晶體焦距調節、近視與遠視成因，並觀察凹凸透鏡如何修正光線聚焦於視網膜。",
-      "categories": ["physics", "optics", "grade_8"]
     },
     {
       "id": "atom",
