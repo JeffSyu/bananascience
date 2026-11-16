@@ -58,6 +58,13 @@
       "meta": "化學 · 物質與原子 · 八年級",
       "desc": "自由增減質子、中子與電子，觀察原子序、質量數、電荷狀態與元素穩定度的變化。",
       "categories": ["chemistry", "matter", "grade_8"]
+    },
+    {
+      "id": "longshortsight",
+      "title": "視力矯正原理",
+      "meta": "物理 · 光學 · 八年級",
+      "desc": "",
+      "categories": ["physics", "wave_light", "grade_8"]
     }
   ]
 }
